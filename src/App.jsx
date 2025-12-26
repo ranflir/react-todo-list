@@ -1,11 +1,37 @@
 // src/App.jsx
-import './App.css';
+import { useState } from 'react';
+import { nanoid } from 'nanoid';
+
 import { Panel } from './components/Panel';
 import { TodoItem } from './components/TodoItem';
 
+import './App.css';
+
 //type () => jsx
 function App() {
-  const todos = ['리액트 기초 배우기', 'To-Do List 만들어보기'];
+  const [todos, setTodos] = useState([
+    { id: nanoid(), text: '리액트 기초 배우기', isDone: false },
+    { id: nanoid(), text: 'To-Do List 만들어보기', isDone: false },
+  ]);
+
+  const [input, setInput] = useState('');
+
+  const handleKeydown = (event) => {
+    setInput(event.target.value);
+  };
+
+  const handleAddTodo = () => {
+    if (input.trim() === '') return;
+
+    const newTodo = {
+      id: nanoid(),
+      text: input,
+      isDone: false,
+    };
+    setTodos((prev) => [...prev, newTodo]);
+    setInput('');
+  };
+
   return (
     <div className="app-container">
       <div className="title-container">
@@ -17,8 +43,14 @@ function App() {
 
       <Panel>
         <div className="input-section">
-          <input type="text" placeholder="새로운 할 일을 입력하세요" />
-          <button>추가</button>
+          <input
+            type="text"
+            placeholder="새로운 할 일을 입력하세요"
+            value={input}
+            onChange={(event) => handleKeydown(event)}
+          />
+
+          <button onClick={handleAddTodo}>추가</button>
         </div>
       </Panel>
 
@@ -27,8 +59,8 @@ function App() {
           <p>할일이 없어요! 새 할일을 추가해 보세요!</p>
         ) : (
           <ul className="todo-list">
-            {todos.map((todo, index) => (
-              <TodoItem key={index} text={todo} />
+            {todos.map((todo) => (
+              <TodoItem key={todo.id} text={todo.text} />
             ))}
           </ul>
         )}
